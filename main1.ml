@@ -1,47 +1,51 @@
+
 open Graphics;;
 open Logosem;;
 open Lexer;;
 open Parser;;
 
-let main () =
-  (* Initialisation de la fenêtre graphique *)
-  open_graph " 800x600";
 
-  
-  (* Exemple de séquence d'instructions à évaluer *)
-    let instructions = 
-    Ast.Seq (
-      Avancer (Ast.Int 50),
-      Seq (
-        Gauche (Ast.Int 90),
-        Seq (
-          Avancer (Ast.Int 100),
-          Seq (
-            If (Ast.Bool true, Gauche (Ast.Int 50), Avancer (Ast.Int 200)),
-            For (Ast.Int 3, Avancer (Ast.Int 50))
-          )
-        )
-      )
-    )
-  in
-  
-  (* Création de l'état initial de la tortue *)
-  let state = initial_state in
-  (* Évaluation des instructions *)
-  eval_instruction instructions state;
-  
-  (* Attendre que l'utilisateur ferme la fenêtre *)
-  try
-    while true do
-      if button_down () then
-        let _ = wait_next_event [Button_up] in ()
-      else
-        let _ = wait_next_event [Key_pressed] in ()
-    done
-  with
-  | Graphic_failure _ -> close_graph (); exit 0
-;;
+let run_program program_string =
+  (* Analyse syntaxique (parsing) *)
+  let lexbuf = Lexing.from_string program_string in
+  let ast = Parser.main Lexer.read lexbuf in
 
-(* Appel de la fonction main *)
-main ()
+  (* Boucle d'interprétation *)
+  let initial_state = { x = 0.0; y = 0.0; angle = 0.0; pen_down = true } in
+  eval_instruction ast initial_state
+
+let read_file file_path =
+  let ic = open_in file_path in
+  let content = really_input_string ic (in_channel_length ic) in
+  close_in ic;
+  content
+
+let rec read_program () =
+  print_endline "Entrez le chemin vers le fichier contenant votre programme (ou entrez 'exit' pour quitter) :";
+  let file_path = read_line () in
+  if file_path = "exit" then
+    ()
+  else begin
+    (* Lire le contenu du fichier *)
+    try
+  let program_string = read_file file_path in
+  (* Exécuter le programme *)
+  run_program program_string;
+  (* Lire le programme suivant récursivement *)
+  read_program ()
+with
+| Sys_error msg -> 
+    print_endline ("Erreur lors de la lecture du fichier : " ^ msg);
+    read_program ()
+| End_of_file ->
+    print_endline "Fin du fichier atteinte.";
+    read_program ()
+
+  end
+
+
+let () =
+  (* Lire et exécuter les programmes jusqu'à ce que l'utilisateur entre 'exit' *)
+  read_program ()
+
 
