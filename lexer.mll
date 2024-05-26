@@ -1,3 +1,8 @@
+{
+  open Parser
+  exception Eof
+}
+
 rule read = parse
   | [' ' '\t' '\r' '\n'] { Printf.printf "Whitespace\n"; read lexbuf }  (* Capture des espaces blancs *)
   | ";;" { Printf.printf "SEMISEMI\n"; SEMISEMI }
