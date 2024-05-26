@@ -1,7 +1,8 @@
+debut;
 avancer(100);
-tourner_droite(90);
+gauche(90);
 avancer(100);
-tourner_droite(90);
+droite(90);
 avancer(100);
-tourner_droite(90);
-avancer(100);
+droite(90);
+avancer(100);;
