@@ -56,4 +56,3 @@ depend: $(SOURCES) $(GENERATED) $(MLIS)
 	$(CAMLDEP) $(SOURCES) $(GENERATED) $(MLIS) > .depend
 
 include .depend
-
