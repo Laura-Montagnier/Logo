@@ -27,8 +27,9 @@
 
 %%
 
-main: inst SEMISEMI EOF { $1 }
-
+main:
+| inst SEMISEMI { $1 }
+| EOF { Stop }
 ;
 
 
@@ -58,6 +59,7 @@ inst:
   |  DROITE LEFT_PAREN INT RIGHT_PAREN  { Droite(Int($3)) }
   |  GAUCHE LEFT_PAREN INT RIGHT_PAREN  { Gauche(Int($3)) }
   | inst SEMI inst {Seq($1, $3)}
+  | EOF { Stop }
 ;
 
 atom:
